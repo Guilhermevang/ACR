@@ -7,6 +7,10 @@
     "type_traits": "cpp",
     "cmath": "cpp",
     "limits": "cpp",
-    "new": "cpp"
+    "new": "cpp",
+    "wav_header.h": "c",
+    "stdio.h": "c",
+    "stdlib.h": "c",
+    "helper-functions.h": "c"
   }
 }
