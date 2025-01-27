@@ -1,6 +1,7 @@
-# C-Audio-Generator
+# C-WAV-Reader
 
-O objetivo é gerar sinais de áudio e armazená-los em um arquivo WAV.
+Lê arquivos de áudio WAV usando a linguagem C.
+O objetivo é aprender sobre a manipulação de arquivos de áudio WAVE.
 
 ## Compilação
 
