@@ -3,5 +3,6 @@
 
 // Abre um arquivo
 FILE *open_file(const char *file_name);
+int handle_error(const char *format, ...);
 
 #endif

@@ -8,15 +8,15 @@
 #include "wav_header_types.h"
 
 // Função para escrever em um chunk do cabeçalho WAV
-void write_to_chunk(union wav_chunk *chunk_properties,
-                    union wav_header_chunks *chunks,
-                    unsigned char *content_bytes);
+void write_generic_chunk(union wav_chunk *chunk_properties,
+                         union wav_header_chunks *chunks,
+                         unsigned char *content_bytes);
 
 // Função para ler o conteúdo genérico de um chunk
-void read_generic_chunk_content(union wav_chunk *chunk_properties,
-                                union wav_header_chunks *chunks,
-                                short *complete,
-                                FILE *file);
+void read_chunk_content(union wav_chunk *chunk_properties,
+                        union wav_header_chunks *chunks,
+                        short *complete,
+                        FILE *file);
 
 // Função para ler o chunk RIFF do cabeçalho WAV
 void read_riff_chunk(union wav_chunk *chunk_properties,

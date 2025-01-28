@@ -8,11 +8,13 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "helper-functions.h"
+#include "resource-manager.h"
 #include "wav_header.h"
 
 int main()
 {
-    char file_name[] = "addf8-Alaw-GW.wav";
+    char file_name[] = "/home/agroflux/Documentos/Pessoal/C-Projects/audio-manipulation/c-audio-manipulation/src/addf8-Alaw-GW.wav";
     union wav_header_chunks chunks;
 
     // Abre o arquivo WAV
@@ -21,10 +23,8 @@ int main()
     // Lê o cabeçalho do arquivo
     read_wav_header(file_in, &chunks);
 
-    // Libera a memória alocada na heap ao ler o cabeçalho
-    free(chunks.data.format_chunk.data.extra_params);
-    free(chunks.data.fact_chunk.data.content);
-    free(chunks.data.data_chunk.data.content);
+    // Libera a memória alocada na heap
+    free_all_resources();
 
     exit(EXIT_SUCCESS);
 }
