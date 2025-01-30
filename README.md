@@ -1,21 +1,15 @@
-# C-WAV-Reader
+# ACR - Audio Content Reader
 
-Lê arquivos de áudio WAV usando a linguagem C.
-O objetivo é aprender sobre a manipulação de arquivos de áudio WAVE.
+O **ACR** é um módulo do sistema modular **cAM-Sys** focado na leitura de dados de conteúdo de áudio em arquivos. Ele abstrai a complexidade de ler e interpretar os dados de áudio, permitindo que outros módulos se concentrem no processamento e manipulação dos dados.
 
-## Compilação
+## **Recursos**
+- Suporte inicial para o formato **WAV**.
+- Leitura e abstração de conteúdo em chunks de dados.
+- Integração com outros módulos do **cAM-Sys**.
 
-### Em Linux e macOS (ou Windows com WSL/MinGW)
-Certifique-se de ter o GCC instalado.
+## **Instalação**
 
-Para executar, primeiro você deve criar o diretório que conterá os arquivos compilados ('build/'). Use:
+### **1. Clonando o Repositório**
+Adicione o ACR como um submódulo ao seu projeto:
 ```bash
-mkdir build # Cria o diretório build/
-cd build    # Acessa o diretório
-cmake ..
-``` 
-
-Para compilar, dentro do diretório `build/`, use:
-```bash
-make
-```
+git submodule add https://github.com/guilhermevang/ACR modules/acr

@@ -1,0 +1,8 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Always
+ColumnLimit: 0
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+BreakBeforeBraces: Allman

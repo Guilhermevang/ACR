@@ -2,25 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Depurar Projeto CMake",
+      "name": "Debug ACR",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/c-audio-reader",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
+      "program": "${workspaceFolder}/build/acr_exec",
+      "cwd": "${workspaceFolder}/build",
       "MIMode": "gdb",
       "setupCommands": [
         {
-          "description": "Ativar impressão de formato hexadecimal",
+          "description": "Ativar impressão de variáveis",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "build",
-      "miDebuggerPath": "/usr/bin/gdb"
+      "preLaunchTask": "build"
     }
   ]
 }

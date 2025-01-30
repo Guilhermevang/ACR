@@ -1,0 +1,3 @@
+[submodule "modules/hlp"]
+	path = modules/hlp
+	url = https://github.com/guilhermevang/HLP
