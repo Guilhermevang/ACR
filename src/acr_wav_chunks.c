@@ -91,26 +91,27 @@ void ACR_WAV_ReadChunk(FILE *File, union ACR_WAV_ChunkHeader *ChunkHeader, union
 	short int IsFactChunk = ACR_WAV_IsChunkId(ChunkHeader, ACR_WAV_CHUNK_ID_FACT);
 	short int IsDataChunk = ACR_WAV_IsChunkId(ChunkHeader, ACR_WAV_CHUNK_ID_DATA);
 
-	unsigned char *ReferChunkBytes;
+	unsigned char *ReferChunk;
 	int			   ChunkSize;
 
 	if (IsFmtChunk)
 	{
-		ReferChunkBytes = Header->Data.FormatChunk.Bytes;
+		ReferChunk = Header->Data.FormatChunk.Bytes;
 		ChunkSize = sizeof(Header->Data.FormatChunk.Bytes);
 	}
 	else if (IsFactChunk)
 	{
-		ReferChunkBytes = Header->Data.FactChunk.Bytes;
+		ReferChunk = Header->Data.FactChunk.Bytes;
 		ChunkSize = sizeof(Header->Data.FactChunk.Bytes);
 	}
 	else if (IsDataChunk)
 	{
-		ReferChunkBytes = Header->Data.DataChunk.Bytes;
+		ReferChunk = Header->Data.DataChunk.Bytes;
 		ChunkSize = sizeof(Header->Data.DataChunk.Bytes);
 	}
 
-	ACR_WAV_WriteToChunk(ReferChunkBytes, ChunkSize, ChunkHeader, File);
+	ACR_WAV_WriteToChunk(ReferChunk, ChunkSize, &ExtraBufferSize, ChunkHeader, File);
+	ACR_WAV_WriteExtraBuffer(ExtraBuffer, ExtraBufferSize, File);
 }
 
 static short int ACR_WAV_IsChunkId(union ACR_WAV_ChunkHeader *ChunkHeader, char ChunkId[ACR_WAV_CHUNK_ID_SIZE])
@@ -119,14 +120,20 @@ static short int ACR_WAV_IsChunkId(union ACR_WAV_ChunkHeader *ChunkHeader, char 
 	return IsSame;
 }
 
-void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, union ACR_WAV_ChunkHeader *ChunkHeader, FILE *File)
+void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, int *ExtraBufferSize, union ACR_WAV_ChunkHeader *ChunkHeader, FILE *File)
 {
 	HLP_Log("Armazenando dados do chunk em uma estrutura");
 
-	short int ReadCount = 0;  // = 1: Sucesso | < 1: Erro
-	int		  ChunkHeaderSize = sizeof(ACR_WAV_ChunkHeader_t);
-	int		  ContentSize = ChunkSize - ChunkHeaderSize;
-	char	  Content[ContentSize];
+	short int ReadCount = 0;									   // = 1: Sucesso | < 1: Erro
+	int		  ChunkHeaderSize = sizeof(ACR_WAV_ChunkHeader_t);	   // Tamanho do cabeçalho
+	int		  ContentSize = ChunkSize - ChunkHeaderSize;		   // Tamanho do conteúdo do chunk (sem contar o cabeçalho)
+	char	  Content[ContentSize];								   // O conteúdo além do cabeçalho
+	*ExtraBufferSize = ChunkHeader->Data.ChunkSize - ContentSize;  // O tamanho do conteúdo extra
+
+	if (ExtraBufferSize < 0)
+	{
+		ExtraBufferSize = 0;
+	}
 
 	// Copia o cabeçalho para o chunk
 	memcpy(Chunk, ChunkHeader->Bytes, ChunkHeaderSize);
@@ -135,7 +142,7 @@ void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, union ACR_WAV_Chu
 	ReadCount = fread(Content, ContentSize, 1, File);
 
 	// Se não foi lido nenhum conteúdo
-	if (ReadCount < 1)
+	if (ReadCount < 1 && ContentSize > 0)
 	{
 		HLP_LogError("Não foi possível ler o conteúdo original do chunk '%s' (tamanho: %d)\n",
 					 ChunkHeader->Data.ChunkId, ContentSize);
@@ -143,4 +150,26 @@ void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, union ACR_WAV_Chu
 
 	// Copia o conteúdo para o chunk
 	memcpy(Chunk + ChunkHeaderSize, &Content, ContentSize);
+}
+
+void ACR_WAV_WriteExtraBuffer(char *Buffer, int BufferSize, FILE *File)
+{
+	HLP_Log("Lendo conteúdo extra do chunk. Tamanho: %d bytes", BufferSize);
+
+	// Quantos bytes serão "cortados/pulados" e não lidos
+	int JumpBytesSize = 0;
+
+	// Se o tamanho do buffer extra for maior que o tamanho permitido
+	if (BufferSize > ACR_WAV_MAX_EXTRA_BUFFER_SIZE)
+	{
+		JumpBytesSize = BufferSize - ACR_WAV_MAX_EXTRA_BUFFER_SIZE;
+		HLP_Log("O conteúdo extra do chunk excede o tamanho permitido (%d bytes)", ACR_WAV_MAX_EXTRA_BUFFER_SIZE);
+		HLP_Log("%d bytes do conteúdo extra serão cortados pois excedem o tamanho permitido", JumpBytesSize);
+	}
+
+	// Lê o conteúdo dentro do tamanho permitido
+	fread(Buffer, BufferSize - JumpBytesSize, 1, File);
+
+	// Pula a quantidade de bytes que o chunk excede
+	fseek(File, JumpBytesSize, SEEK_CUR);
 }

@@ -22,6 +22,8 @@ void ACR_WAV_ReadChunk(FILE *File, union ACR_WAV_ChunkHeader *ChunkHeader, union
 
 static short int ACR_WAV_IsChunkId(union ACR_WAV_ChunkHeader *ChunkHeader, char ChunkId[ACR_WAV_CHUNK_ID_SIZE]);
 
-void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, union ACR_WAV_ChunkHeader *ChunkHeader, FILE *File);
+void ACR_WAV_WriteToChunk(unsigned char *Chunk, int ChunkSize, int *ExtraBufferSize, union ACR_WAV_ChunkHeader *ChunkHeader, FILE *File);
+
+void ACR_WAV_WriteExtraBuffer(char *Buffer, int BufferSize, FILE *File);
 
 #endif
